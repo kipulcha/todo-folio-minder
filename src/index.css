@@ -153,4 +153,13 @@
   .slide-up {
     @apply animate-slide-up;
   }
+  
+  /* Kanban styles */
+  .kanban-column {
+    @apply flex flex-col min-h-[400px];
+  }
+  
+  .draggable {
+    @apply cursor-grab active:cursor-grabbing;
+  }
 }

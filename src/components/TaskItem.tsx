@@ -7,9 +7,10 @@ import { CalendarDays, CheckCircle2, Clock, Edit, Trash2 } from 'lucide-react';
 
 interface TaskItemProps {
   task: Task;
+  isDraggable?: boolean;
 }
 
-const TaskItem: React.FC<TaskItemProps> = ({ task }) => {
+const TaskItem: React.FC<TaskItemProps> = ({ task, isDraggable = false }) => {
   const { selectTask, deleteTask, updateTask } = useTaskContext();
   
   const handleEdit = () => {
@@ -34,12 +35,19 @@ const TaskItem: React.FC<TaskItemProps> = ({ task }) => {
     updateTask({ ...task, status: newStatus });
   };
   
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+    e.dataTransfer.setData('taskId', task.id);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+  
   const isOverdue = isTaskOverdue(task);
   
   return (
     <div 
-      className="task-card animate-scale-in cursor-pointer group"
+      className={`task-card animate-scale-in cursor-pointer group ${isDraggable ? 'draggable' : ''}`}
       onClick={handleEdit}
+      draggable={isDraggable}
+      onDragStart={handleDragStart}
     >
       <div className="flex items-start justify-between mb-2">
         <div className={`task-category ${getCategoryColor(task.category)}`}>
