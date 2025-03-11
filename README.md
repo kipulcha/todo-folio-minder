@@ -67,3 +67,54 @@ Simply open [Lovable](https://lovable.dev/projects/20ceb488-422d-43cc-924b-53492
 ## I want to use a custom domain - is that possible?
 
 We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+
+Sequential Diagram:
+    participant User
+    participant TaskList
+    participant TaskItem
+    participant TaskForm
+    participant TaskContext
+    participant LocalStorage
+
+    Note over User,LocalStorage: Task Creation Flow
+    User->>TaskList: Clicks "New Task" button
+    TaskList->>TaskContext: toggleForm(true)
+    TaskContext->>TaskForm: Updates isFormOpen state to true
+    TaskForm->>User: Displays task creation form
+    User->>TaskForm: Fills in task details and submits
+    TaskForm->>TaskContext: addTask(taskData)
+    TaskContext->>TaskContext: Creates task with ID and timestamps
+    TaskContext->>LocalStorage: Saves updated tasks array
+    TaskContext->>TaskForm: Closes form
+    TaskForm->>TaskList: Re-renders with new task
+
+    Note over User,LocalStorage: Task Update Flow
+    User->>TaskItem: Clicks on task to edit
+    TaskItem->>TaskContext: selectTask(taskId)
+    TaskContext->>TaskForm: Opens form with selected task
+    TaskForm->>User: Displays form with task data
+    User->>TaskForm: Updates fields and submits
+    TaskForm->>TaskContext: updateTask(taskData)
+    TaskContext->>LocalStorage: Saves updated task
+    TaskContext->>TaskList: Re-renders with updated task
+
+    Note over User,LocalStorage: Drag and Drop Flow
+    User->>TaskItem: Starts dragging a task
+    TaskItem->>TaskItem: handleDragStart stores taskId
+    User->>TaskList: Drags to different status column
+    TaskList->>TaskList: handleDrop receives taskId and newStatus
+    TaskList->>TaskContext: updateTask with new status
+    TaskContext->>LocalStorage: Saves task with updated status
+    TaskContext->>TaskList: Re-renders columns with moved task
+
+    Note over User,LocalStorage: Task Deletion Flow
+    User->>TaskItem: Clicks delete button
+    TaskItem->>TaskContext: deleteTask(taskId)
+    TaskContext->>TaskContext: Removes task from tasks array
+    TaskContext->>LocalStorage: Saves updated tasks array
+    TaskContext->>TaskList: Re-renders without deleted task
+
+    Note over User,LocalStorage: Data Persistence
+    TaskContext->>LocalStorage: Saves tasks on any state change
+    TaskContext->>LocalStorage: Loads tasks on initial render
+
